@@ -92,24 +92,31 @@ def test_way(ttt_list):
 #确定计算机下一步要走的地方
 #对于棋盘
 def get_comp_move(num_moves,opp_cell):
+
+    #如果这是第3步，且对手第2步下在边上，就下在中央
     if num_moves==3 and opp_cell in [2,4,6,8]:
         return 1,1
 
+    #生成一个包含所有空单元格的列表
     cell_list=[(i,j) for j in range(n)
                for i in range(n) if mat[i][j]=='.']
 
+    #检查每个单元格，看它能否让我方立即获胜
     for cell in cell_list:
         if test_to_win(cell[0],cell[1]):
             return cell[0],cell[1]
 
+    #检查每个单元格，看它能否让敌方立即获胜
     for cell in cell_list:
         if test_to_block(cell[0],cell[1]):
             return cell[0],cell[1]
 
+    #检查每个单元格，看它能否成双二
     for cell in cell_list:
         if test_db1_threat(cell[0],cell[1]):
             return cell[0],cell[1]
 
+    #棋子落子的优先队列
     prefix=[1,9,3,7,5,2,4,6,8]
     for i in prefix:
         r=(i-1)//3
@@ -117,6 +124,8 @@ def get_comp_move(num_moves,opp_cell):
         if mat[r][c]=='.':
             return r,c
 
+#检查能否获胜：检查包含当前单元格的每个获胜组合
+#如果其中包含两个X，就能立即获胜
 def test_to_win(r,c):
     cell_n=r*3+c+1
     my_win_list=[ttt_list for ttt_list in win_list
@@ -128,6 +137,8 @@ def test_to_win(r,c):
             return True
     return False
 
+#检查能否对手获胜：检查包含当前单元格的每个获胜组合
+#如果其中包含两个O，就能立即获胜
 def test_to_block(r,c):
     cell_n=r*3+c+1
     my_win_list=[ttt_list for ttt_list in win_list
@@ -139,6 +150,8 @@ def test_to_block(r,c):
             return True
     return False
 
+#检查能否成双二：检查包含所有单元格的所有获胜组合
+#如果有两个组合都有X，就能成双二
 def test_db1_threat(r,c):
     threats=0
     cell_n=r*3+c+1
